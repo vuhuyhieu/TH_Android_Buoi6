@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Quản lý sinh viên</string>
+    <string name="student_name">Họ tên</string>
+    <string name="student_address">Địa chỉ</string>
+    <string name="student_gender">Giới tính</string>
+    <string name="male">Nam</string>
+    <string name="female">Nữ</string>
+    <string name="button_ok">Đồng ý</string>
+    <string name="button_cancel">Hủy bỏ</string>
+    <string name="insert_student">Thêm sinh viên</string>
+    <string name="update_student">Sửa thông tin</string>
+    <string name="delete_student">Xóa sinh viên</string>
+    <string name="touch_to_replace_image">Bấm vào ảnh để chọn lại</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
