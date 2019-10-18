@@ -10,13 +10,16 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RadioButton;
+import android.widget.Toast;
 
 import com.example.model.Student;
 import com.example.th_anroid_buoi6.R;
+import com.example.viewmodel.DatabaseStudent;
 
 public class InsertAndUpdateActivity extends AppCompatActivity {
     public static final int MODE_CREATE = 1;
-    public static final int MODE_UPĐATE = 2;
+    public static final int MODE_UPDATE = 2;
+    boolean neededRefresh = false;
     int mode;
     EditText editTextName, editTextAddress;
     Button btnOk, btnCancel;
@@ -45,11 +48,8 @@ public class InsertAndUpdateActivity extends AppCompatActivity {
         btnOk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mode==MODE_CREATE) {
-                    addNewStudent();
-                }else {
-                    updateStudent(student);
-                }
+                neededRefresh=true;
+                updateOrAddNewStudent(student);
             }
         });
         btnCancel.setOnClickListener(new View.OnClickListener() {
@@ -72,7 +72,8 @@ public class InsertAndUpdateActivity extends AppCompatActivity {
         });
     }
 
-    private void updateStudent(Student student) {
+    private void updateOrAddNewStudent(Student student) {
+        DatabaseStudent db = new DatabaseStudent(this);
         student.setStudentName(editTextName.getText().toString());
         student.setStudentAddress(editTextAddress.getText().toString());
         Drawable image = buttonSelectImage.getBackground();
@@ -86,32 +87,12 @@ public class InsertAndUpdateActivity extends AppCompatActivity {
         }
         student.setStudentGender(gender);
 
-        Bundle bundle = new Bundle();
-        bundle.putSerializable("student", student);
-        intent.putExtra("data", bundle);
-        setResult(MainActivity.UPDATE_ITEM, intent);
-        finish();
-    }
-
-    private void addNewStudent() {
-        Student student = new Student();
-        student.setStudentName(editTextName.getText().toString());
-        student.setStudentAddress(editTextAddress.getText().toString());
-        Drawable image = buttonSelectImage.getBackground();
-        student.setStudentAvatar(String.valueOf(image));
-        boolean gender;
-        if (radioFemale.isChecked()){
-            gender = false;
-            buttonSelectImage.setBackgroundResource(R.drawable.female);
-        }else {
-            gender = true;
+        if (mode==MODE_CREATE){
+            db.addStudent(student);
+        }else if (mode==MODE_UPDATE){
+            db.updateStudent(student);
         }
-        student.setStudentGender(gender);
-
-        Bundle bundle = new Bundle();
-        bundle.putSerializable("student", student);
-        intent.putExtra("data", bundle);
-        setResult(MainActivity.CREATE_ITEM, intent);
+        Toast.makeText(this, "Them thanh cong", Toast.LENGTH_LONG).show();
         finish();
     }
 
@@ -126,9 +107,9 @@ public class InsertAndUpdateActivity extends AppCompatActivity {
         buttonSelectImage = findViewById(R.id.buttonInsertAvatar);
 
         if (student!=null){
-            mode = MODE_UPĐATE;
+            mode = MODE_UPDATE;
             editTextName.setText(student.getStudentName());
-            editTextAddress.setText(student.getStudentName());
+            editTextAddress.setText(student.getStudentAddress());
             if (student.isMale()){
                 radioMale.setChecked(true);
                 buttonSelectImage.setBackgroundResource(R.drawable.male);
@@ -142,5 +123,13 @@ public class InsertAndUpdateActivity extends AppCompatActivity {
             title="Thêm sinh viên";
         }
         this.setTitle(title);
+    }
+
+    @Override
+    public void finish() {
+        Intent data = new Intent();
+        data.putExtra("needRefresh", neededRefresh);
+        this.setResult(MainActivity.RESULT_OK, data);
+        super.finish();
     }
 }

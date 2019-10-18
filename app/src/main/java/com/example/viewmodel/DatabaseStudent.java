@@ -119,6 +119,7 @@ public class DatabaseStudent extends SQLiteOpenHelper {
 
             } while (cursor.moveToNext());
         }
+        cursor.close();
         return listStudent;
     }
 

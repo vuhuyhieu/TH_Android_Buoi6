@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.model.Student;
 import com.example.th_anroid_buoi6.R;
@@ -26,8 +27,7 @@ public class MainActivity extends AppCompatActivity {
     AdapterStudent adapterStudent;
     DatabaseStudent dbStudent;
     Student selectedStudent;
-    public static final int OPEN_CREATE_ITEM_ACTIVITY = 111;
-    public static final int OPEN_UPDATE_ITEM_ACTIVITY = 222;
+    public static final int REQUEST_CODE = 111;
     public static final int CREATE_ITEM = 11;
     public static final int UPDATE_ITEM = 22;
     public static final int DELETE_ITEM = 33;
@@ -105,25 +105,26 @@ public class MainActivity extends AppCompatActivity {
             bundle.putSerializable("student", selectedStudent);
             intent.putExtra("data", bundle);
         }
-        startActivityForResult(intent, OPEN_CREATE_ITEM_ACTIVITY);
+        startActivityForResult(intent, REQUEST_CODE);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode==MainActivity.CREATE_ITEM){
-            Bundle bundle = data.getBundleExtra("data");
-            Student student = (Student) bundle.getSerializable("student");
-            dbStudent.addStudent(student);
-            loadStudent();
-            adapterStudent.notifyDataSetChanged();
-        }else if (requestCode==MainActivity.UPDATE_ITEM){
-            Bundle bundle = data.getBundleExtra("data");
-            Student student = (Student) bundle.getSerializable("student");
-            dbStudent.updateStudent(student);
-            loadStudent();
-            adapterStudent.notifyDataSetChanged();
+        if (resultCode==RESULT_OK && requestCode==REQUEST_CODE){
+            boolean refresh = data.getBooleanExtra("needRefresh", true);
+            if (refresh){
+                Toast.makeText(this, "vao day", Toast.LENGTH_LONG).show();
+//                reloadStudent();
+            }
         }
+    }
+
+    private void reloadStudent() {
+        listStudent.clear();
+        ArrayList<Student> list = dbStudent.getStudentList();
+        listStudent.addAll(list);
+        adapterStudent.notifyDataSetChanged();
     }
 
     public void loadStudent(){
