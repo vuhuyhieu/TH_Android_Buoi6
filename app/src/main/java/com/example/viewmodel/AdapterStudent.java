@@ -20,11 +20,12 @@ public class AdapterStudent extends ArrayAdapter<Student> {
     Context context;
     int resource;
     List<Student> objects;
+
     public AdapterStudent(@NonNull Context context, int resource, @NonNull List<Student> objects) {
         super(context, resource, objects);
-        this.context=context;
-        this.resource=resource;
-        this.objects=objects;
+        this.context = context;
+        this.resource = resource;
+        this.objects = objects;
     }
 
     @NonNull
@@ -39,16 +40,7 @@ public class AdapterStudent extends ArrayAdapter<Student> {
         Student student = objects.get(position);
         textViewName.setText(student.getStudentName());
         textViewAddress.setText(student.getStudentAddress());
-        int resID;
-        if (student.isMale()){
-            resID = R.drawable.male;
-        }
-        else {
-            resID = R.drawable.female;
-        }
-        if(!student.getStudentAvatar().equals("")){
-            resID = Integer.parseInt(student.getStudentAvatar());
-        }
+        int resID = student.isMale() ? R.drawable.male : R.drawable.female;
         imageAvatar.setImageResource(resID);
         return row;
     }
