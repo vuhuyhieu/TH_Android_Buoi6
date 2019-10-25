@@ -10,7 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name="com.example.view.InsertAndUpdateActivity"
+            android:name="com.example.view.InsertActivity"
             android:theme="@style/Theme.AppCompat.Light.Dialog" />
         <activity android:name="com.example.view.MainActivity">
             <intent-filter>

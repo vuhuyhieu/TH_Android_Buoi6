@@ -9,23 +9,21 @@ public class Student implements Serializable {
     private String studentName;
     private String studentAddress;
     private boolean studentGender;
-    private String studentAvatar;
 
-    public Student() {}
+    public Student() {
+    }
 
-    public Student(String studentID, String studentName, String studentAddress, boolean studentGender, String studentAvatar) {
+    public Student(String studentID, String studentName, String studentAddress, boolean studentGender) {
         this.studentID = studentID;
         this.studentName = studentName;
         this.studentAddress = studentAddress;
         this.studentGender = studentGender;
-        this.studentAvatar = studentAvatar;
     }
 
-    public Student(String studentName, String studentAddress, boolean studentGender, String studentAvatar) {
+    public Student(String studentName, String studentAddress, boolean studentGender) {
         this.studentName = studentName;
         this.studentAddress = studentAddress;
         this.studentGender = studentGender;
-        this.studentAvatar = studentAvatar;
     }
 
     public String getStudentID() {
@@ -52,14 +50,14 @@ public class Student implements Serializable {
         this.studentAddress = studentAddress;
     }
 
-    public boolean getStudentGender(){
+    public boolean getStudentGender() {
         return studentGender;
     }
 
     public boolean isMale() {
-        if (getStudentGender()==true){
+        if (getStudentGender() == true) {
             return true;
-        }else {
+        } else {
             return false;
         }
     }
@@ -68,17 +66,9 @@ public class Student implements Serializable {
         this.studentGender = studentGender;
     }
 
-    public String getStudentAvatar() {
-        return studentAvatar;
-    }
-
-    public void setStudentAvatar(String studentAvatar) {
-        this.studentAvatar = studentAvatar;
-    }
-
     @NonNull
     @Override
     public String toString() {
-        return this.studentID + " - " +this.studentName;
+        return this.studentID + " - " + this.studentName;
     }
 }

@@ -1,8 +1,10 @@
 package com.example.view;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.ContextMenu;
@@ -12,7 +14,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.example.model.Student;
 import com.example.th_anroid_buoi6.R;
@@ -27,10 +28,8 @@ public class MainActivity extends AppCompatActivity {
     AdapterStudent adapterStudent;
     DatabaseStudent dbStudent;
     Student selectedStudent;
-    public static final int REQUEST_CODE = 111;
-    public static final int CREATE_ITEM = 11;
-    public static final int UPDATE_ITEM = 22;
-    public static final int DELETE_ITEM = 33;
+    public static final int REQUEST_CODE = 1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,13 +50,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void initView() {
         dbStudent = new DatabaseStudent(this);
-        if (dbStudent.getStudentsCount()==0){
+        if (dbStudent.getStudentsCount() == 0) {
             dbStudent.initThreeStudent();
         }
         listViewStudent = findViewById(R.id.listViewStudent);
-        listStudent = new ArrayList<>();
-        loadStudent();
-        adapterStudent = new AdapterStudent(this,R.layout.item_student,listStudent);
+        listStudent = dbStudent.getStudentList();
+        adapterStudent = new AdapterStudent(this, R.layout.item_student, listStudent);
         listViewStudent.setAdapter(adapterStudent);
         registerForContextMenu(listViewStudent);
     }
@@ -73,50 +71,67 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_menu, menu);
-        return true;
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
-            case R.id.item_add_new_student: openInsertAndUpdateActivity(); break;
+        switch (item.getItemId()) {
+            case R.id.item_add_new_student:
+                openInsertActivity();
+                break;
         }
         return true;
     }
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        switch (item.getItemId()){
-            case R.id.item_update_student: openInsertAndUpdateActivity();break;
-            case R.id.item_delete_student: deleteStudent();break;
+        switch (item.getItemId()) {
+            case R.id.item_delete_student:
+                openDeleteStudentDialog();
+                break;
         }
         return true;
     }
 
-    private void deleteStudent() {
+    private void openDeleteStudentDialog() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Xóa sinh viên");
+        builder.setMessage("Bạn có muốn xóa sinh viên này?");
+        builder.setPositiveButton("Đồng ý", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                deleteStudent(selectedStudent);
+            }
+        });
+        builder.setNegativeButton("Hủy bỏ", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.show();
+    }
 
+    private void deleteStudent(Student selectedStudent) {
+        dbStudent.deleteStudent(selectedStudent);
+        reloadStudent();
     }
 
 
-    private void openInsertAndUpdateActivity() {
-        Intent intent = new Intent(MainActivity.this, InsertAndUpdateActivity.class);
-        Bundle bundle = new Bundle();
-        if (selectedStudent!=null){
-            bundle.putSerializable("student", selectedStudent);
-            intent.putExtra("data", bundle);
-        }
+    private void openInsertActivity() {
+        Intent intent = new Intent(MainActivity.this, InsertActivity.class);
         startActivityForResult(intent, REQUEST_CODE);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode==RESULT_OK && requestCode==REQUEST_CODE){
-            boolean refresh = data.getBooleanExtra("needRefresh", true);
-            if (refresh){
-                Toast.makeText(this, "vao day", Toast.LENGTH_LONG).show();
-//                reloadStudent();
-            }
+        if (resultCode == RESULT_OK && requestCode == REQUEST_CODE) {
+            Bundle bundle = data.getBundleExtra("data");
+            Student student = (Student) bundle.getSerializable("student");
+            dbStudent.addStudent(student);
+            reloadStudent();
         }
     }
 
@@ -125,9 +140,5 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<Student> list = dbStudent.getStudentList();
         listStudent.addAll(list);
         adapterStudent.notifyDataSetChanged();
-    }
-
-    public void loadStudent(){
-        listStudent = dbStudent.getStudentList();
     }
 }

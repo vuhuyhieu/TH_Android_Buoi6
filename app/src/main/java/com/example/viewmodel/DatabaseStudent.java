@@ -20,7 +20,6 @@ public class DatabaseStudent extends SQLiteOpenHelper {
     public static final String COLUMN_STUDENT_NAME = "Name";
     public static final String COLUMN_STUDENT_GENDER = "Gender";
     public static final String COLUMN_STUDENT_ADDRESS = "Address";
-    public static final String COLUMN_STUDENT_AVATAR = "Avatar";
 
     Context context;
 
@@ -36,7 +35,6 @@ public class DatabaseStudent extends SQLiteOpenHelper {
                 + COLUMN_STUDENT_ID + " integer primary key autoincrement, "
                 + COLUMN_STUDENT_NAME + " TEXT, "
                 + COLUMN_STUDENT_ADDRESS + " TEXT, "
-                + COLUMN_STUDENT_AVATAR + " TEXT, "
                 + COLUMN_STUDENT_GENDER + " TEXT )";
         db.execSQL(createStatement);
     }
@@ -49,9 +47,9 @@ public class DatabaseStudent extends SQLiteOpenHelper {
 
     public void initThreeStudent() {
         ArrayList<Student> list = new ArrayList();
-        Student student1 = new Student("Vũ Huy Hiếu", "190 Lò Đúc, Hà Nội", true, "");
-        Student student2 = new Student("Nguyễn Hoài Thu", "Thủ Đức, TP HCM", false, "");
-        Student student3 = new Student("Nguyễn Thu Hà", "256 Trần Đại Nghĩa, Hà Nội", false, "");
+        Student student1 = new Student("Vũ Huy Hiếu", "190 Lò Đúc, Hà Nội", true);
+        Student student2 = new Student("Nguyễn Hà Thu", "Thủ Đức, TP HCM", false);
+        Student student3 = new Student("Trần Hoài Thương", "256 Trần Đại Nghĩa, Hà Nội", false);
         list.add(student1);
         list.add(student2);
         list.add(student3);
@@ -63,41 +61,35 @@ public class DatabaseStudent extends SQLiteOpenHelper {
     public void addStudent(Student student) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        String studentGender = "Male";
-        if (!student.isMale()) {
-            studentGender = "Female";
-        }
+        String studentGender = student.isMale()? "Male" : "Female";
         values.put(COLUMN_STUDENT_NAME, student.getStudentName());
         values.put(COLUMN_STUDENT_ADDRESS, student.getStudentAddress());
-        values.put(COLUMN_STUDENT_AVATAR, student.getStudentAvatar());
         values.put(COLUMN_STUDENT_GENDER, studentGender);
         db.insert(TABLE_NAME, null, values);
         db.close();
     }
 
-    public Student getStudent(int studentID) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TABLE_NAME, new String[]{
-                        COLUMN_STUDENT_ID, COLUMN_STUDENT_NAME, COLUMN_STUDENT_ADDRESS,
-                        COLUMN_STUDENT_AVATAR, COLUMN_STUDENT_GENDER
-                }, COLUMN_STUDENT_ID + " =?",
-                new String[]{String.valueOf(studentID)}, null, null, null, null);
-        if (cursor != null) {
-            cursor.moveToFirst();
-        }
-        Student student = new Student();
-        student.setStudentID(String.valueOf(studentID));
-        student.setStudentName(cursor.getString(1));
-        student.setStudentAddress(cursor.getString(2));
-        student.setStudentAvatar(cursor.getString(3));
-        boolean gender = true;
-        if (cursor.getString(4).equals("Female")) {
-            gender = false;
-        }
-        student.setStudentGender(gender);
-        cursor.close();
-        return student;
-    }
+//    public Student getStudent(int studentID) {
+//        SQLiteDatabase db = this.getReadableDatabase();
+//        Cursor cursor = db.query(TABLE_NAME, new String[]{
+//                        COLUMN_STUDENT_ID, COLUMN_STUDENT_NAME, COLUMN_STUDENT_ADDRESS, COLUMN_STUDENT_GENDER
+//                }, COLUMN_STUDENT_ID + " =?",
+//                new String[]{String.valueOf(studentID)}, null, null, null, null);
+//        if (cursor != null) {
+//            cursor.moveToFirst();
+//        }
+//        Student student = new Student();
+//        student.setStudentID(String.valueOf(studentID));
+//        student.setStudentName(cursor.getString(1));
+//        student.setStudentAddress(cursor.getString(2));
+//        boolean gender = true;
+//        if (cursor.getString(4).equals("Female")) {
+//            gender = false;
+//        }
+//        student.setStudentGender(gender);
+//        cursor.close();
+//        return student;
+//    }
 
     public ArrayList<Student> getStudentList() {
         ArrayList<Student> listStudent = new ArrayList<>();
@@ -109,13 +101,12 @@ public class DatabaseStudent extends SQLiteOpenHelper {
                 String studentID = cursor.getString(0);
                 String studentName = cursor.getString(1);
                 String studentAddress = cursor.getString(2);
-                String studentAvatar = cursor.getString(3);
-                String gender = cursor.getString(4);
+                String gender = cursor.getString(3);
                 boolean studentGender = true;
                 if (gender.equals("Female")) {
                     studentGender = false;
                 }
-                listStudent.add(new Student(studentID, studentName, studentAddress, studentGender, studentAvatar));
+                listStudent.add(new Student(studentID, studentName, studentAddress, studentGender));
 
             } while (cursor.moveToNext());
         }
@@ -135,24 +126,23 @@ public class DatabaseStudent extends SQLiteOpenHelper {
         return count;
     }
 
-    public int updateStudent(Student student) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        String studentGender = "Male";
-        if (!student.isMale()) {
-            studentGender = "Female";
-        }
-        values.put(COLUMN_STUDENT_NAME, student.getStudentName());
-        values.put(COLUMN_STUDENT_ADDRESS, student.getStudentAddress());
-        values.put(COLUMN_STUDENT_AVATAR, student.getStudentAvatar());
-        values.put(COLUMN_STUDENT_GENDER, studentGender);
-        return db.update(TABLE_NAME, values, COLUMN_STUDENT_ID + " = ? ",
-                new String[]{student.getStudentID()});
-    }
+//    public int updateStudent(Student student) {
+//        SQLiteDatabase db = this.getWritableDatabase();
+//        ContentValues values = new ContentValues();
+//        String studentGender = "Male";
+//        if (!student.isMale()) {
+//            studentGender = "Female";
+//        }
+//        values.put(COLUMN_STUDENT_NAME, student.getStudentName());
+//        values.put(COLUMN_STUDENT_ADDRESS, student.getStudentAddress());
+//        values.put(COLUMN_STUDENT_GENDER, studentGender);
+//        return db.update(TABLE_NAME, values, COLUMN_STUDENT_ID + " = ? ",
+//                new String[]{student.getStudentID()});
+//    }
 
     public void deleteStudent(Student student) {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_NAME, COLUMN_STUDENT_ID + " = ?", new String[]{student.getStudentID()});
+        db.delete(TABLE_NAME, COLUMN_STUDENT_ID + " = ? ", new String[]{student.getStudentID()});
         db.close();
     }
 }
